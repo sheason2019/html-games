@@ -107,9 +107,12 @@ export const cellsSlice = createSlice({
         state.temp = { index: -1, stack: [] };
       }
     },
+    setTime(state, payload) {
+      state.time = payload.payload;
+    },
   }
 })
 
-export const { initColumn, selectColumn, moveCard, moveToSlot, moveToCollection } = cellsSlice.actions;
+export const { initColumn, selectColumn, moveCard, moveToSlot, moveToCollection, setTime } = cellsSlice.actions;
 
 export default cellsSlice.reducer;

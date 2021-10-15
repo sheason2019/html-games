@@ -126,7 +126,6 @@ export default function Column(props) {
           min = item[item.length - 1].value;
         }
       })
-      console.log(item.value, min);
       if (item.value > min + 2) {
         return;
       }

@@ -1,6 +1,9 @@
+import React from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components"
 import Collection from "./Collections"
 import Slots from "./Slots"
+import { setTime } from './cellsSlice';
 
 const BarContainer = styled.div`
   display: flex;
@@ -31,12 +34,24 @@ const TimeCounter = styled.div`
 `;
 
 export default function ControlBar() {
+  const time = useSelector(state => state.cells.time);
+  const start = useSelector(state => state.cells.start);
+  const dispatch = useDispatch();
+  const timeout = React.useRef(null);
+  React.useEffect(() => {
+    if (start) {
+      setTimeout(() => {
+        dispatch(setTime(time + 1));
+      }, 1000);
+    } else {
+    }
+  }, [dispatch, start, time]);
   return (
     <BarContainer>
       <Slots />
         <TimeContainer>
           <Time>Time</Time>
-          <TimeCounter>0</TimeCounter>
+          <TimeCounter>{time}</TimeCounter>
         </TimeContainer>
       <Collection />
     </BarContainer>
