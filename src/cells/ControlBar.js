@@ -37,7 +37,6 @@ export default function ControlBar() {
   const time = useSelector(state => state.cells.time);
   const start = useSelector(state => state.cells.start);
   const dispatch = useDispatch();
-  const timeout = React.useRef(null);
   React.useEffect(() => {
     if (start) {
       setTimeout(() => {

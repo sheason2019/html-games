@@ -4,10 +4,12 @@ import styled from "styled-components";
 import { initColumn, selectColumn } from "./cellsSlice";
 import ControlBar from "./ControlBar"
 import GamePanel from "./GamePanel";
+import Message from "./Message";
 
 const Background = styled.div`
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   background-color: green;
   display: flex;
   flex-direction: column;
@@ -26,6 +28,7 @@ function Cells() {
     <Background onClick={handleCancelSelected}>
       <ControlBar />
       <GamePanel />
+      <Message />
     </Background>
   )
 }

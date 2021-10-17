@@ -24,6 +24,12 @@ const initialState = {
   },
   // 游戏是否开始的标识符
   start: false,
+  // 提示信息的数据结构
+  message: {
+    open: false,
+    text: '',
+    message_id: 0,
+  },
 }
 
 export const cellsSlice = createSlice({
@@ -54,7 +60,8 @@ export const cellsSlice = createSlice({
         return;
       } else if (length > moveableLength) {
         if (state.columns[target].length !== 0) {
-          console.log('超出了可移动的卡片数量');
+          state.message.open = true;
+          state.message.text = `移动卡牌失败，您试图移动${length}张牌，但现在只能移动${moveableLength}张`;
           return;
         }
       }
@@ -105,14 +112,27 @@ export const cellsSlice = createSlice({
         }
         state.collections[target].push(item);
         state.temp = { index: -1, stack: [] };
+        state.start = true;
       }
+      let isEnd = true;
+      state.collections.forEach(item => {
+        if (item.length === 0) {
+          return;
+        } else if (item[item.length - 1].value !== 12) {
+          isEnd = false;
+        }
+      });
+      state.start = !isEnd;
     },
     setTime(state, payload) {
       state.time = payload.payload;
     },
+    setMessage(state, payload) {
+      Object.assign(state.message, payload.payload);
+    }
   }
 })
 
-export const { initColumn, selectColumn, moveCard, moveToSlot, moveToCollection, setTime } = cellsSlice.actions;
+export const { initColumn, selectColumn, moveCard, moveToSlot, moveToCollection, setTime, setMessage } = cellsSlice.actions;
 
 export default cellsSlice.reducer;
