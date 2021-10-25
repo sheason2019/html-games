@@ -23,6 +23,7 @@ export default function Empty() {
   const temp = useSelector((state) => state.cells.temp);
   const collections = useSelector((state) => state.cells.collections);
   const start = useSelector(state => state.cells.start);
+  const blockAutoCollection = useSelector(state => state.cells.blockAutoCollection);
   const handleClickSlot = React.useCallback(
     (num) => {
       if (slots[num] === null) {
@@ -37,8 +38,22 @@ export default function Empty() {
   );
 
   const checkToCollection = React.useCallback(() => {
+    if (blockAutoCollection) {
+      return;
+    }
+    let min = 12;
+    collections.forEach(collection => {
+      if (collection.length === 0) {
+        min = 0;
+      } else if (collection[collection.length - 1].value < min) {
+        min = collection[collection.length - 1].value;
+      }
+    })
+
     slots.forEach((item, index) => {
       if (item === null) {
+        return;
+      } else if (item.value >= min + 2) {
         return;
       }
 

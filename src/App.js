@@ -7,10 +7,12 @@ import {
   Link
 } from 'react-router-dom';
 import Cells from './cells';
+import Header from './layout/Header';
 
 function App() {
   return (
     <Router>
+      <Header />
       <Switch>
         <Router path="/">
           <Cells />

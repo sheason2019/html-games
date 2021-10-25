@@ -7,6 +7,7 @@ import { setTime } from './cellsSlice';
 
 const BarContainer = styled.div`
   display: flex;
+  margin-top: 4.5rem;
 `;
 const TimeContainer = styled.div`
   width: 12rem;

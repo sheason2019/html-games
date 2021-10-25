@@ -1,7 +1,7 @@
 import Card from "./Card";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { moveCard, moveToCollection, selectColumn } from "./cellsSlice";
+import { moveCard, moveToCollection, moveToSlot, selectColumn } from "./cellsSlice";
 import React from "react";
 
 const ColumnWrapper = styled.div`
@@ -79,8 +79,10 @@ export default function Column(props) {
   const dispatch = useDispatch();
   const selected = useSelector((state) => state.cells.temp);
   const collections = useSelector((state) => state.cells.collections);
+  const slots = useSelector(state => state.cells.slots);
   const columns = useSelector((state) => state.cells.columns);
   const start = useSelector((state) => state.cells.start);
+  const blockAutoCollection = useSelector((state) => state.cells.blockAutoCollection);
   const data = columns[props.index];
 
   const handleOnClick = React.useCallback((e) => {
@@ -100,6 +102,9 @@ export default function Column(props) {
       );
     }
   }, [data, dispatch, props.index, selected.stack]);
+  const resetSelected = React.useCallback(() => {
+    dispatch(selectColumn({ index: -1, stack: [] }));
+  }, [dispatch]);
 
   const shouldBackdropOpen = (index) => {
     if (selected.type === "column") {
@@ -112,6 +117,9 @@ export default function Column(props) {
     }
   };
   const checkToCollection = React.useCallback(() => {
+    if (blockAutoCollection) {
+      return;
+    }
     const data = columns[props.index];
     if (data.length === 0) {
       return;
@@ -126,7 +134,7 @@ export default function Column(props) {
           min = item[item.length - 1].value;
         }
       })
-      if (item.value > min + 2) {
+      if (item.value >= min + 2) {
         return;
       }
       if (collection.length === 0) {
@@ -141,7 +149,56 @@ export default function Column(props) {
         }
       }
     }
-  }, [collections, columns, dispatch, handleOnClick, props.index]);
+  }, [blockAutoCollection, collections, columns, dispatch, handleOnClick, props.index]);
+  const couldToCollection = () => {
+    const data = columns[props.index];
+    if (data.length === 0) {
+      return false;
+    } else {
+      const item = data[data.length - 1];
+      const collection = collections[item.color];
+      if (collection.length === 0) {
+        if (item.value === 0) {
+          return true;
+        }
+      } else {
+        if (collection[collection.length - 1].value + 1 === item.value) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+  const couldToSlot = () => {
+    const data = columns[props.index];
+    if (data.length === 0) {
+      return false;
+    } else {
+      for (let i = 0; i < slots.length; i++) {
+        if (slots[i] === null) {
+          return {
+            allow: true,
+            target: i,
+          };
+        }
+      }
+      return { allow: false };
+    }
+  };
+  const handleMouseUp = (e) => {
+    if (e.button === 2) {
+      const slotsInfo = couldToSlot();
+      if (couldToCollection()) {
+        resetSelected();
+        handleOnClick();
+        dispatch(moveToCollection({ target: data[data.length - 1].color }));
+      } else if (slotsInfo.allow) {
+        resetSelected();
+        handleOnClick();
+        dispatch(moveToSlot({ target: slotsInfo.target }));
+      }
+    }
+  };
   React.useEffect(() => {
     if (start) {
       checkToCollection();
@@ -149,7 +206,7 @@ export default function Column(props) {
   }, [checkToCollection, start]);
 
   return (
-    <ColumnWrapper onClick={handleOnClick}>
+    <ColumnWrapper onClick={handleOnClick} onMouseUp={handleMouseUp}>
       {data.length === 0 ? (
         <EmptyCard />
       ) : (

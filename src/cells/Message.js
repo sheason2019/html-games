@@ -26,19 +26,24 @@ const MessageContainer = styled.div`
 
 function Message() {
   const message = useSelector((state) => state.cells.message);
-  const handleCloseMessage = _.debounce(() => {
-    dispatch(setMessage({ open: false }));
-  }, 3000, {
-    leading: false,
-    trailing: true,
-  });
+  const timeout = React.useRef(null);
+  const timestamp = React.useRef(null);
   const dispatch = useDispatch();
+
+  const handleCloseMessage = React.useCallback(() => {
+    dispatch(setMessage({ open: false }));
+  }, [dispatch]);
   React.useEffect(() => {
-    if (message.open) {
-      handleCloseMessage();
+    if (timeout.current !== null) {
+      clearTimeout(timeout.current);
     }
-    // debounce 关闭message
-  }, [handleCloseMessage, message.open]);
+    if (message.open || message.message_id !== timestamp.current) {
+      timeout.current = setTimeout(() => {
+        handleCloseMessage();
+      }, 2000);
+      timestamp.current = message.message_id;
+    }
+  }, [handleCloseMessage, message.message_id, message.open]);
   React.useEffect(() => {
     console.log(message);
   }, [message]);
