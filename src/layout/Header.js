@@ -10,6 +10,9 @@ const HeaderContainer = styled.div`
   color: #FFF;
   display: flex;
   align-items: center;
+  @media (max-width: 960px) {
+    display: none;
+  }
 `;
 const Title = styled.div`
   font-size: 2rem;

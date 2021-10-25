@@ -8,6 +8,11 @@ import { setTime } from './cellsSlice';
 const BarContainer = styled.div`
   display: flex;
   margin-top: 4.5rem;
+
+  @media (max-width: 960px) {
+    transform: scale(0.5);
+    margin-top: -2rem;
+  }
 `;
 const TimeContainer = styled.div`
   width: 12rem;
