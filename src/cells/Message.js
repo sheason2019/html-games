@@ -44,9 +44,6 @@ function Message() {
       timestamp.current = message.message_id;
     }
   }, [handleCloseMessage, message.message_id, message.open]);
-  React.useEffect(() => {
-    console.log(message);
-  }, [message]);
   return (
     <MessageContainer open={message.open}>
       <b style={{ userSelect: "none" }}>
