@@ -60,10 +60,11 @@ export const cellsSlice = createSlice({
       state.collections = initCollections();
       state.slots = initSlots();
       state.time = 0;
+      state.start = false;
       state.blockAutoCollection = false;
     },
     selectColumn(state, payload) {
-      Object.assign(state.temp, payload.payload);
+      Object.assign(state.temp, payload.payload, { timeStamp: Date.now() });
     },
     moveCard(state, payload) {
       const { target, length } = payload.payload;
@@ -147,7 +148,10 @@ export const cellsSlice = createSlice({
         }
       });
       state.start = !isEnd;
-      state.status = isEnd ? 'end' : state.status;
+      if (isEnd) {
+        state.status = 'end';
+        localStorage.setItem('completePatch', parseInt(localStorage.getItem('completePatch')) + 1);
+      }
     },
     setTime(state, payload) {
       state.time = payload.payload;
@@ -181,6 +185,11 @@ export const cellsSlice = createSlice({
         state.slots = Object.assign([], item.slots);
         state.justCancel = true;
         state.blockAutoCollection = true;
+        state.temp = {
+          index: -1,
+          stack: [],
+          type: 'column',
+        };
       }
     },
   },

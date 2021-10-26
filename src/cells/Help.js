@@ -20,6 +20,10 @@ const HelpItem = styled.div`
   border-radius: 4px;
   color: white;
   user-select: none;
+  @media(max-width: 960px) {
+    transform: scale(0.5);
+    transform-origin: 50% 10%;
+  }
   p {
     margin: 0;
   }

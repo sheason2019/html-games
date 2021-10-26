@@ -1,6 +1,6 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { setStatus } from "./cellsSlice";
+import { initColumn, setStatus } from "./cellsSlice";
 
 const WelcomeContainer = styled.div`
   display: flex;
@@ -21,34 +21,44 @@ const WelcomeItem = styled.div`
   justify-content: center;
   align-items: center;
   user-select: none;
-  opacity: ${props => props.disable ? 0.5 : 1};
-  ${
-    props => props.disable ? 'cursor: not-allowed;' : 
-  `
+  opacity: ${(props) => (props.disable ? 0.5 : 1)};
+  ${(props) =>
+    props.disable
+      ? "cursor: not-allowed;"
+      : `
     &:hover {
       background-color: rgba(0, 0, 0, 0.75);
       cursor: pointer;
     }
-  `
-  }
+  `}
 `;
 
 function Welcome() {
   const dispatch = useDispatch();
+  const status = useSelector((state) => state.cells.status);
 
   const handleNewGame = () => {
-    dispatch(setStatus('game'));
+    dispatch(setStatus("game"));
+    dispatch(initColumn());
   };
   const handleHelp = () => {
-    dispatch(setStatus('help'));
-  }
+    dispatch(setStatus("help"));
+  };
+  const handleResume = () => {
+    dispatch(setStatus("game"));
+  };
   return (
     <WelcomeContainer>
-      <WelcomeItem disable={true}>继续游戏(构建中...)</WelcomeItem>
+      <WelcomeItem
+        onClick={handleResume}
+        style={{ visibility: status === "pause" ? "visible" : "hidden" }}
+      >
+        继续游戏
+      </WelcomeItem>
       <WelcomeItem onClick={handleNewGame}>新的游戏</WelcomeItem>
       <WelcomeItem onClick={handleHelp}>游戏帮助</WelcomeItem>
     </WelcomeContainer>
-  )
+  );
 }
 
 export default Welcome;

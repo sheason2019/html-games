@@ -64,9 +64,7 @@ function End() {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    const storage = localStorage.getItem('completePatch');
-    completedPatch.current = (storage ? parseInt(storage) : 0) + 1;
-    localStorage.setItem('completePatch', completedPatch.current);
+    completedPatch.current = localStorage.getItem('completePatch')
   }, []);
 
   const handleNewGame = () => {

@@ -56,7 +56,7 @@ export default function ControlBar() {
       <Slots />
         <TimeContainer>
           <Time>Time</Time>
-          <TimeCounter>{time}</TimeCounter>
+          <TimeCounter>{Math.floor(time / 60)}:{time % 60 < 10 ? '0' + time % 60 : time % 60}</TimeCounter>
         </TimeContainer>
       <Collection />
     </BarContainer>

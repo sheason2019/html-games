@@ -1,7 +1,12 @@
 import Card from "./Card";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { moveCard, moveToCollection, moveToSlot, selectColumn } from "./cellsSlice";
+import {
+  moveCard,
+  moveToCollection,
+  moveToSlot,
+  selectColumn,
+} from "./cellsSlice";
 import React from "react";
 
 const ColumnWrapper = styled.div`
@@ -79,29 +84,32 @@ export default function Column(props) {
   const dispatch = useDispatch();
   const selected = useSelector((state) => state.cells.temp);
   const collections = useSelector((state) => state.cells.collections);
-  const slots = useSelector(state => state.cells.slots);
+  const slots = useSelector((state) => state.cells.slots);
   const columns = useSelector((state) => state.cells.columns);
   const start = useSelector((state) => state.cells.start);
-  const blockAutoCollection = useSelector((state) => state.cells.blockAutoCollection);
+  const blockAutoCollection = useSelector(
+    (state) => state.cells.blockAutoCollection
+  );
   const data = columns[props.index];
 
-  const handleOnClick = React.useCallback((e) => {
-    if (e) {
-      e.stopPropagation();
-    }
-    const moveInfo = tryMoveCard(
-      selected.stack,
-      data
-    );
-    if (moveInfo.allowMove) {
-      dispatch(moveCard({ target: props.index, length: moveInfo.length }));
-    } else {
-      const stack = searchMoveableCard(data);
-      dispatch(
-        selectColumn({ index: props.index, stack: stack, type: "column" })
-      );
-    }
-  }, [data, dispatch, props.index, selected.stack]);
+  const handleOnClick = React.useCallback(
+    (e) => {
+      if (e) {
+        e.stopPropagation();
+      }
+      const moveInfo = tryMoveCard(selected.stack, data);
+      if (moveInfo.allowMove) {
+        dispatch(moveCard({ target: props.index, length: moveInfo.length }));
+      } else {
+        const stack = searchMoveableCard(data);
+        dispatch(
+          selectColumn({ index: props.index, stack: stack, type: "column" })
+        );
+      }
+    },
+    [data, dispatch, props.index, selected.stack]
+  );
+
   const resetSelected = React.useCallback(() => {
     dispatch(selectColumn({ index: -1, stack: [] }));
   }, [dispatch]);
@@ -127,13 +135,13 @@ export default function Column(props) {
       const item = data[data.length - 1];
       const collection = collections[item.color];
       let min = 13;
-      collections.forEach(item => {
+      collections.forEach((item) => {
         if (item.length === 0) {
           min = 0;
         } else if (item[item.length - 1].value < min) {
           min = item[item.length - 1].value;
         }
-      })
+      });
       if (item.value >= min + 2) {
         return;
       }
@@ -149,7 +157,14 @@ export default function Column(props) {
         }
       }
     }
-  }, [blockAutoCollection, collections, columns, dispatch, handleOnClick, props.index]);
+  }, [
+    blockAutoCollection,
+    collections,
+    columns,
+    dispatch,
+    handleOnClick,
+    props.index,
+  ]);
   const couldToCollection = () => {
     const data = columns[props.index];
     if (data.length === 0) {
@@ -235,11 +250,65 @@ const MoveAbleColumnWrapper = styled.div`
 
 const MoveAbleColumn = (props) => {
   const selected = useSelector((state) => state.cells.temp);
-  const column = useSelector((state) => state.cells.columns[selected.index]);
+  const columns = useSelector(state => state.cells.columns);
+  const collections = useSelector(state => state.cells.collections);
+  const slots = useSelector(state => state.cells.slots);
+  const column = columns[selected.index];
+  const data = columns[selected.index];
   const dispatch = useDispatch();
+
+  const couldToCollection = () => {
+    if (data.length === 0) {
+      return false;
+    } else {
+      const item = data[data.length - 1];
+      const collection = collections[item.color];
+      if (collection.length === 0) {
+        if (item.value === 0) {
+          return true;
+        }
+      } else {
+        if (collection[collection.length - 1].value + 1 === item.value) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+  const couldToSlot = () => {
+    if (data.length === 0) {
+      return false;
+    } else {
+      for (let i = 0; i < slots.length; i++) {
+        if (slots[i] === null) {
+          return {
+            allow: true,
+            target: i,
+          };
+        }
+      }
+      return { allow: false };
+    }
+  };
+
   const handleOnClick = (e) => {
     e.stopPropagation();
-    dispatch(selectColumn({ index: -1, stack: [] }));
+    const sourceTime = selected.timeStamp || 0;
+    const targetTime = Date.now();
+    if (targetTime - sourceTime < 300) {
+      handleOnDoubleClick();
+    } else {
+      dispatch(selectColumn({ index: -1, stack: [] }));
+    }
+  };
+  const handleOnDoubleClick = () => {
+    console.log('on double click');
+    const slotsInfo = couldToSlot();
+    if (couldToCollection()) {
+      dispatch(moveToCollection({ target: data[data.length - 1].color }));
+    } else if (slotsInfo.allow) {
+      dispatch(moveToSlot({ target: slotsInfo.target }));
+    }
   };
   if (!props.show) {
     return null;

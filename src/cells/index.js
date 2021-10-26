@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { cancelAction, initColumn, pushIntoHistory, selectColumn } from "./cellsSlice";
+import { cancelAction, initColumn, pushIntoHistory, selectColumn, setStatus } from "./cellsSlice";
 import ControlBar from "./ControlBar";
 import End from "./End";
 import FAB from "./FAB";
@@ -34,6 +34,9 @@ function Cells() {
     if (history.length > 1) {
       dispatch(cancelAction(history[history.length - 2]));
     }
+  };
+  const handlePause = () => {
+    dispatch(setStatus('pause'));
   };
 
   React.useEffect(() => {
@@ -71,13 +74,16 @@ function Cells() {
         <ControlBar />
         <GamePanel />
         <Message />
-        <FAB onClick={handleCancelAction}>撤销</FAB>
+        <FAB right='1rem' bottom='1rem' onClick={handleCancelAction}>撤销</FAB>
+        <FAB left='1rem' bottom='1rem' onClick={handlePause}>菜单</FAB>
       </>
     );
   } else if (status === "help") {
     content = (<Help />);
   } else if (status === "end") {
     content = (<End />);
+  } else if (status === 'pause') {
+    content = (<Welcome />);
   }
   return (
     <Background onClick={handleCancelSelected} onContextMenu={e => e.preventDefault()}>

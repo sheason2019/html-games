@@ -2,8 +2,10 @@ import styled from "styled-components";
 
 const FloatActionButton = styled.div`
   position: fixed;
-  right: 1rem;
-  bottom: 1rem;
+  right: ${props => props.right};
+  bottom: ${props => props.bottom};
+  left: ${props => props.left};
+  top: ${props => props.top};
   width: 4rem;
   height: 4rem;
   border-radius: 2rem;
@@ -14,6 +16,10 @@ const FloatActionButton = styled.div`
   z-index: 20;
   background-color: rgba(0,0,0,0.5);
   border: 2px solid rgba(0,0,0,0.75);
+  &:hover {
+    background-color: rgba(0,0,0,0.75);
+    cursor: pointer;
+  }
 `;
 
 function FAB(props) {
