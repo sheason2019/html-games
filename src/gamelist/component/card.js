@@ -4,7 +4,6 @@ const CardWrapper = styled.div`
   width: 10rem;
   height: 10rem;
   background-color: white;
-  margin: 0.5rem;
   box-shadow: 0 0 4px 1px lightgray;
   border-radius: 4px;
   display: flex;

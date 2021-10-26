@@ -13,8 +13,11 @@ const GameListWrapper = styled.div`
 const GameListContainer = styled.div`
   @media (min-width: 1180px) {
     width: 1180px;
+    padding: 0;
   }
   width: 100vw;
+  padding: 0 1rem;
+  box-sizing: border-box;
 `;
 const Cards = styled.div`
   width: 100%;

@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { initColumn, setStatus } from "./cellsSlice";
 
@@ -36,6 +37,7 @@ const WelcomeItem = styled.div`
 function Welcome() {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.cells.status);
+  const history = useHistory();
 
   const handleNewGame = () => {
     dispatch(setStatus("game"));
@@ -47,16 +49,20 @@ function Welcome() {
   const handleResume = () => {
     dispatch(setStatus("game"));
   };
+  const handleExit = () => {
+    history.push('/');
+  };
   return (
     <WelcomeContainer>
       <WelcomeItem
         onClick={handleResume}
-        style={{ visibility: status === "pause" ? "visible" : "hidden" }}
+        style={{ display: status === "pause" ? "static" : "none" }}
       >
         继续游戏
       </WelcomeItem>
       <WelcomeItem onClick={handleNewGame}>新的游戏</WelcomeItem>
       <WelcomeItem onClick={handleHelp}>游戏帮助</WelcomeItem>
+      <WelcomeItem onClick={handleExit}>退出游戏</WelcomeItem>
     </WelcomeContainer>
   );
 }
