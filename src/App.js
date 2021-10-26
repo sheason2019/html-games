@@ -6,17 +6,23 @@ import {
   Route,
   Link
 } from 'react-router-dom';
-import Cells from './cells';
-import Header from './layout/Header';
+import GameList from './gamelist';
+import { router } from './gamelist/router';
 
 function App() {
   return (
     <Router>
-      <Header />
       <Switch>
-        <Router path="/">
-          <Cells />
-        </Router>
+        {
+          router.map(item => (
+            <Route path={item.link} key={item.title}>
+              {item.component}
+            </Route>
+          ))
+        }
+        <Route exact path="/">
+          <GameList />
+        </Route>
       </Switch>
     </Router>
   );
