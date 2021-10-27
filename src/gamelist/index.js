@@ -24,6 +24,9 @@ const Cards = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  @media (max-width: 768px) {
+    justify-content: space-between;
+  }
 `;
 const Title = styled.h1`
   margin: 0;

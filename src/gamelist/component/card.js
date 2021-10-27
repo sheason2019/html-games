@@ -10,9 +10,14 @@ const CardWrapper = styled.div`
   justify-content: center;
   align-items: center;
   color: black;
+  margin: 0 0.5rem;
   &:hover {
     box-shadow: 0 0 6px 2px lightgray;
     cursor: pointer;
+  }
+  @media(max-width: 768px) {
+    width: 44vw;
+    margin: 0;
   }
 `;
 

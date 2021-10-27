@@ -1,5 +1,6 @@
 import Cells from "../cells";
 import Header from "../layout/Header";
+import TowerDefense from "../tower-defense";
 
 export const router = [
   {
@@ -12,4 +13,11 @@ export const router = [
       </>
     )
   },
+  {
+    title: '塔防游戏',
+    link: '/towerdefense',
+    component: (
+      <TowerDefense />
+    ),
+  }
 ]
