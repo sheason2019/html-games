@@ -33,7 +33,7 @@ function Tower(props) {
   } = props;
   const towerId = React.useRef(Date.now());
   const CD = React.useRef(true);
-  const cooldownTime = 500;
+  const cooldownTime = 100;
   const [towerCoordinate, setTowerCoordinate] = React.useState({
     top: 0,
     left: 0,

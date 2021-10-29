@@ -46,7 +46,9 @@ function TowerDefense() {
   const monsters = React.useRef([]);
   // 怪物模型
   const [monstersModel, setMonstersModel] = React.useState([
-    { type: "normal", id: 0 },
+    { type: "normal", id: 0, hp: 10, maxHp: 10, },
+    { type: "normal", id: 1, hp: 10, maxHp: 20, },
+    { type: "normal", id: 2, hp: 10, maxHp: 10, },
   ]);
   // 默认怪物行进路线
   const defaultRoadmap = initRoadMap();
@@ -56,7 +58,7 @@ function TowerDefense() {
   // 当前指向的节点
   const [centerNode, setCenterNode] = React.useState(null);
   // 子弹模型
-  const [bulletsModel, setBulletsModel] = React.useState([]);
+  const bulletsModel = React.useRef([]).current;
   // 把地图方块的DOM存储到index.js的state中
   const handleSetDomForMap = (row, col, dom) => {
     const newDemoMap = [...DemoMap];
@@ -71,12 +73,10 @@ function TowerDefense() {
   const bulletKey = React.useRef(0);
   // 请求开火
   const requestFire = (bullet) => {
-    const newBulletsModel = [...bulletsModel];
-    newBulletsModel.push({ ...bullet, key: bulletKey.current++ });
+    bulletsModel.push({ ...bullet, key: bulletKey.current++ });
     if (bulletKey.current > 99999999) {
       bulletKey.current = 0;
     }
-    setBulletsModel(newBulletsModel);
   };
   // 清理子弹
   const cleanBullet = (key) => {
@@ -92,10 +92,30 @@ function TowerDefense() {
     if (index === null) {
       return;
     } else {
-      setBulletsModel(newBulletsModel => {
-        newBulletsModel.splice(index, 1);
-        return newBulletsModel;
-      });
+      bulletsModel.splice(index, 1);
+    }
+  };
+  const towerAttack = (monsterId) => {
+    const newMonstersModel = [...monstersModel];
+    newMonstersModel.forEach((monster) => {
+      if (monster.id === monsterId) {
+        --monster.hp;
+      }
+    });
+    setMonstersModel(newMonstersModel);
+  };
+  const removeMonster = (monsterId) => {
+    const newMonstersModel = [...monstersModel];
+    let deleteIndex = null;
+    newMonstersModel.forEach((monster, index) => {
+      if (monster.id === monsterId) {
+        deleteIndex = index;
+      }
+      return false;
+    });
+    if (deleteIndex !== null) {
+      newMonstersModel.splice(deleteIndex, 1);
+      setMonstersModel(newMonstersModel);
     }
   };
   React.useEffect(() => {
@@ -106,6 +126,7 @@ function TowerDefense() {
       <Battleland gameMap={DemoMap} handleSetDomForMap={handleSetDomForMap} />
       <Monsters
         monsters={monsters.current}
+        removeMonster={removeMonster}
         gameMap={DemoMap}
         defaultRoadmap={defaultRoadmap}
         monstersModel={monstersModel}
@@ -118,7 +139,12 @@ function TowerDefense() {
         requestFire={requestFire}
         setCenterNode={setCenterNode}
       />
-      <Bullets bulletsModel={bulletsModel} cleanBullet={cleanBullet} />
+      <Bullets
+        bulletsModel={bulletsModel}
+        cleanBullet={cleanBullet}
+        towerAttack={towerAttack}
+        monsters={monsters}
+      />
       <AttackRange centerNode={centerNode} />
     </GameContainer>
   );
