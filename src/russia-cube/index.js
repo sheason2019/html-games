@@ -6,26 +6,38 @@ import {
   Circle,
   Line,
   Group,
+  useData,
 } from "../lib/canvas-in-react";
 
 function RussiaCube() {
   const coordinate = React.useRef({ x: 0, y: 0 });
   const variableSize = React.useRef(0);
+  const { updateStackForLayer, registUpdateFunc, removeUpdateFunc } = useData();
+
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      coordinate.current.y++;
-      coordinate.current.x++;
-      variableSize.current++;
-      setTimeout(() => clearInterval(interval), 3000);
-    }, 1000 / 60);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+    const key = registUpdateFunc({
+      func: () => {
+        coordinate.current.y++;
+        coordinate.current.x++;
+        variableSize.current++;
+      },
+      frames: 1,
+      index: 0,
+    });
+    setTimeout(() => {
+      removeUpdateFunc(key);
+    }, 3000);
+  }, [registUpdateFunc, removeUpdateFunc]);
+
   return (
     <Canvas>
-      <Layer>
-        <LineWithRect variableSize={variableSize} coordinate={coordinate} />
+      <Layer updateStackForLayer={updateStackForLayer} fps={60}>
+        <LineWithRect
+          registUpdateFunc={registUpdateFunc}
+          removeUpdateFunc={removeUpdateFunc}
+          variableSize={variableSize}
+          coordinate={coordinate}
+        />
         <Circle
           type="stroke"
           coordinate={{ x: 150, y: 120 }}
@@ -71,30 +83,33 @@ function LineWithRect(props) {
           y: coordinate.current.y,
         },
       },
+      {
+        source: {
+          x: 150,
+          y: 120,
+        },
+        target: {
+          x: coordinate.current.x,
+          y: coordinate.current.y,
+        },
+      },
     ];
   };
   const lineRef = React.useRef(calcuLineRef());
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      lineRef.current = calcuLineRef();
-    }, 1000 / 60);
-    return () => clearInterval(interval);
+    const key = props.registUpdateFunc({
+      func: () => {
+        lineRef.current = calcuLineRef();
+      },
+      frames: 1,
+      index: 1,
+    });
+    setTimeout(() => {
+      props.removeUpdateFunc(key);
+    }, 3000);
   }, []);
   return (
     <Group {...props}>
-      <Rect
-        type="stroke"
-        coordinate={{ x: 150, y: 120 }}
-        lineWidth={1}
-        color="#00FF00"
-        size={variableSize}
-      />
-      <Line
-        sourcePoint={{ x: 150, y: 120 }}
-        color="#000000"
-        targetPoint={coordinate}
-      />
-      <Rect coordinate={coordinate} color="#ff00ff" size={50} />
       {lineRef.current.map((_line, index) => (
         <Line
           key={index}
@@ -103,6 +118,14 @@ function LineWithRect(props) {
           targetPoint={(data) => data[index].target}
         />
       ))}
+      <Rect
+        type="stroke"
+        coordinate={{ x: 150, y: 120 }}
+        lineWidth={1}
+        color="#00FF00"
+        size={variableSize}
+      />
+      <Rect coordinate={coordinate} color="#ff00ff" size={50} />
     </Group>
   );
 }

@@ -5,6 +5,7 @@ import Rect from "./Rect";
 import Circle from "./Circle";
 import Line from "./Line";
 import Group from "./Group";
+import useData from "./useData";
 
 export {
   Canvas,
@@ -14,4 +15,5 @@ export {
   Rect,
   Line,
   Group,
+  useData,
 };
