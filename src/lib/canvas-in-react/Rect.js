@@ -1,5 +1,6 @@
 import React from "react";
 import { Shape } from ".";
+import handleGetData from "./util/handleGetData";
 
 function Rect(props) {
   const {
@@ -14,8 +15,9 @@ function Rect(props) {
   const render = React.useCallback(
     (ctx) => {
       // 使组件能同时处理ref和普通对象
-      const Coordinate = !!coordinate.current ? coordinate.current : coordinate;
-      const Size = !!size.current ? size.current : size;
+      const Coordinate = handleGetData(coordinate);
+      const Size = handleGetData(size);
+      const Color = handleGetData(color);
       const { x, y } = Coordinate;
       let Width, Height;
       if (typeof Size === "number") {
@@ -28,10 +30,11 @@ function Rect(props) {
       }
       if (!ctx) return;
       if (type === "fill") {
-        ctx.fillStyle = color;
+        ctx.fillStyle = Color;
         ctx.fillRect(x, y, Width, Height);
+        ctx.fillStyle = "#000000";
       } else if (type === "stroke") {
-        ctx.strokeStyle = color;
+        ctx.strokeStyle = Color;
         ctx.lineWidth = lineWidth;
         ctx.strokeRect(x, y, Width, Height);
         ctx.lineWidth = 1;

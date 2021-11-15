@@ -6,6 +6,7 @@ import Circle from "./Circle";
 import Line from "./Line";
 import Group from "./Group";
 import useData from "./useData";
+import Text from "./Text";
 
 export {
   Canvas,
@@ -16,4 +17,5 @@ export {
   Line,
   Group,
   useData,
+  Text,
 };
